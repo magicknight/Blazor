@@ -1,15 +1,15 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using Microsoft.AspNetCore.Razor.Language;
-using Microsoft.AspNetCore.Blazor.Build.Core.RazorCompilation.Engine;
-using Microsoft.AspNetCore.Blazor.Components;
-using Microsoft.AspNetCore.Blazor.RenderTree;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.CodeDom.Compiler;
+using Microsoft.AspNetCore.Razor.Language;
+using Microsoft.AspNetCore.Blazor.Components;
+using Microsoft.AspNetCore.Blazor.RenderTree;
+using Microsoft.AspNetCore.Blazor.Razor;
 
 namespace Microsoft.AspNetCore.Blazor.Build.Core.RazorCompilation
 {
@@ -93,12 +93,13 @@ namespace Microsoft.AspNetCore.Blazor.Build.Core.RazorCompilation
                 // name and any public members. Don't need to actually emit all the RenderTreeBuilder
                 // invocations.
 
-                var engine = new BlazorRazorEngine();
+                var engine = RazorEngine.Create(BlazorExtension.Register);
 
                 var sourceDoc = RazorSourceDocument.ReadFrom(inputFileContents, inputFilePath);
                 var codeDoc = RazorCodeDocument.Create(sourceDoc);
                 codeDoc.Items[BlazorCodeDocItems.Namespace] = combinedNamespace;
                 codeDoc.Items[BlazorCodeDocItems.ClassName] = itemClassName;
+
                 engine.Process(codeDoc);
                 var csharpDocument = codeDoc.GetCSharpDocument();
                 var generatedCode = csharpDocument.GeneratedCode;

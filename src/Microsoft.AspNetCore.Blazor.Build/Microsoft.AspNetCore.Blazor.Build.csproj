@@ -22,9 +22,11 @@
   <ItemGroup>
     <ProjectReference Include="..\Microsoft.AspNetCore.Blazor.Browser.JS\Microsoft.AspNetCore.Blazor.Browser.JS.csproj" />
     <ProjectReference Include="..\Microsoft.AspNetCore.Blazor.Mono\Microsoft.AspNetCore.Blazor.Mono.csproj" />
+    <ProjectReference Include="..\Microsoft.AspNetCore.Blazor.Razor.Extensions\Microsoft.AspNetCore.Blazor.Razor.Extensions.csproj">
+      <SetTargetFramework>TargetFramework=netstandard2.0</SetTargetFramework>
+    </ProjectReference>
     <ProjectReference Include="..\Microsoft.AspNetCore.Blazor\Microsoft.AspNetCore.Blazor.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.Razor" Version="2.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Razor.Language" Version="2.0.1" />
     <PackageReference Include="Microsoft.Extensions.CommandLineUtils" Version="1.1.1" />
     <PackageReference Include="Microsoft.Extensions.FileProviders.Composite" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.FileProviders.Physical" Version="2.0.0" />

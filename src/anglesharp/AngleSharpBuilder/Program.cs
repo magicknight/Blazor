@@ -28,11 +28,11 @@ namespace AngleSharpBuilder
             var angleSharpAssembly = Assembly.GetAssembly(typeof(HtmlParser));
             WriteWithInternalsVisibleTo(
                 angleSharpAssembly,
-                "Microsoft.AspNetCore.Blazor.Build",
+                new[] { "Microsoft.AspNetCore.Blazor.Razor.Extensions", "Microsoft.AspNetCore.Blazor.Build", },
                 outputDir);
         }
 
-        private static void WriteWithInternalsVisibleTo(Assembly assembly, string internalVisibleToArg, string outputDir)
+        private static void WriteWithInternalsVisibleTo(Assembly assembly, string[] friendAssemblies, string outputDir)
         {
             Directory.CreateDirectory(outputDir);
 
@@ -42,11 +42,13 @@ namespace AngleSharpBuilder
             var internalsVisibleToCtor = moduleDefinition.ImportReference(
                 typeof(InternalsVisibleToAttribute).GetConstructor(new[] { typeof(string) }));
 
-            var customAttribute = new CustomAttribute(internalsVisibleToCtor);
-            customAttribute.ConstructorArguments.Add(
-                new CustomAttributeArgument(moduleDefinition.TypeSystem.String, internalVisibleToArg));
-
-            moduleDefinition.Assembly.CustomAttributes.Add(customAttribute);
+            foreach (var friendAssembly in friendAssemblies)
+            {
+                var customAttribute = new CustomAttribute(internalsVisibleToCtor);
+                customAttribute.ConstructorArguments.Add(
+                    new CustomAttributeArgument(moduleDefinition.TypeSystem.String, friendAssembly));
+                moduleDefinition.Assembly.CustomAttributes.Add(customAttribute);
+            }
 
             moduleDefinition.Write(Path.Combine(outputDir, Path.GetFileName(assemblyLocation)));
         }

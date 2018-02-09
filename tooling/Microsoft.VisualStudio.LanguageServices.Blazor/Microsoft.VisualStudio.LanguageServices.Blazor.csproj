@@ -4,4 +4,18 @@
     <TargetFramework>net461</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Microsoft.AspNetCore.Blazor.Razor.Extensions\Microsoft.AspNetCore.Blazor.Razor.Extensions.csproj"/>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="2.6.0-beta1-62023-02" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="..\..\..\Razor\src\Microsoft.CodeAnalysis.Razor.Workspaces\bin\Debug\net46\Microsoft.AspNetCore.Razor.Language.dll" />
+    <Reference Include="..\..\..\Razor\src\Microsoft.CodeAnalysis.Razor.Workspaces\bin\Debug\net46\Microsoft.CodeAnalysis.Razor.dll" />
+    <Reference Include="..\..\..\Razor\src\Microsoft.CodeAnalysis.Razor.Workspaces\bin\Debug\net46\Microsoft.CodeAnalysis.Razor.Workspaces.dll" />
+  </ItemGroup>
+  
 </Project>

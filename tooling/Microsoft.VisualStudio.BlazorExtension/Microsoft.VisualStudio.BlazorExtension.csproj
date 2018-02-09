@@ -61,7 +61,6 @@
     <CopyBuildOutputToOutputDirectory>true</CopyBuildOutputToOutputDirectory>
     <CopyOutputSymbolsToOutputDirectory>true</CopyOutputSymbolsToOutputDirectory>
   </PropertyGroup>
-
   <!--
     This is needed to support our infrastructure's automatic upload of symbols to the symbol server
     for debugging. 
@@ -70,9 +69,8 @@
     ought to be copied for publishing. This will noop otherwise.
   -->
   <Target Name="CopySymbolsToOutput" AfterTargets="Build" Condition="'$(SymbolsPublishDir)' != ''">
-     <Copy SourceFiles="$(OutDir)$(AssemblyName).pdb" DestinationFolder="$(SymbolsPublishDir)" />
+    <Copy SourceFiles="$(OutDir)$(AssemblyName).pdb" DestinationFolder="$(SymbolsPublishDir)" />
   </Target>
-
   <!--
     We should be really careful about what goes into the VSIX and what doesn't. Since we're using
     P2P references and packages, there are some things we need to exclude.
@@ -89,8 +87,45 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <SuppressFromVsix Include="Microsoft.AspNetCore.Razor.Language.dll" />
+    <SuppressFromVsix Include="Microsoft.CodeAnalysis.Razor.dll" />
+    <SuppressFromVsix Include="Microsoft.CodeAnalysis.Razor.Workspaces.dll" />
   </ItemGroup>
-  <!-- END INTERESTING STUFF -->
+  
+  <!-- Manually include Anglesharp since we're building it -->
+  <ItemGroup>
+    <Content Include="..\..\src\anglesharp\AngleSharpBuilder\dist\AngleSharp.dll">
+      <Link>AngleSharp.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Visible>false</Visible>
+    </Content>
+    
+    <!--
+      Let's continue our parade of gross workarounds. 
+      
+      Referencing a cross-targeting project using a P2P from a VSIX project doesn't work well. To work around
+      this problem, we're only using the P2P references to force build ordering. Then we include the build
+      output of those projects as content.
+    -->
+    <Content Include="..\..\src\Microsoft.AspNetCore.Blazor.Razor.Extensions\bin\$(Configuration)\net461\Microsoft.AspNetCore.Blazor.Razor.Extensions.dll">
+      <Link>Microsoft.AspNetCore.Blazor.Razor.Extensions.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="..\Microsoft.VisualStudio.LanguageServices.Blazor\bin\$(Configuration)\net461\Microsoft.VisualStudio.LanguageServices.Blazor.dll">
+      <Link>Microsoft.VisualStudio.LanguageServices.Blazor.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Visible>false</Visible>
+    </Content>
+  </ItemGroup>
+  <!-- 
+  
+    END INTERESTING STUFF 
+    
+  -->
+  
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -152,11 +187,19 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Microsoft.AspNetCore.Blazor.Razor.Extensions\Microsoft.AspNetCore.Blazor.Razor.Extensions.csproj">
+      <Project>{B2A318B2-0326-44E4-8AAF-BB76C9802CE6}</Project>
+      <Name>Microsoft.AspNetCore.Blazor.Razor.Extensions</Name>
+      <Private>False</Private>
+      <IncludeOutputGroupsInVSIX></IncludeOutputGroupsInVSIX>
+      <IncludeOutputGroupsInVSIXLocalOnly></IncludeOutputGroupsInVSIXLocalOnly>
+    </ProjectReference>
     <ProjectReference Include="..\Microsoft.VisualStudio.LanguageServices.Blazor\Microsoft.VisualStudio.LanguageServices.Blazor.csproj">
       <Project>{b9f7f502-6dd2-4e77-8fd1-cbd76f695b26}</Project>
       <Name>Microsoft.VisualStudio.LanguageServices.Blazor</Name>
-      <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
-      <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
+      <Private>False</Private>
+      <IncludeOutputGroupsInVSIX></IncludeOutputGroupsInVSIX>
+      <IncludeOutputGroupsInVSIXLocalOnly></IncludeOutputGroupsInVSIXLocalOnly>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

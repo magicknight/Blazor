@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Razor.Language.CodeGeneration;
 using Microsoft.AspNetCore.Razor.Language.Intermediate;
 using System;
 
-namespace Microsoft.AspNetCore.Blazor.Build.Core.RazorCompilation.Engine
+namespace Microsoft.AspNetCore.Blazor.Razor
 {
     /// <summary>
     /// A <see cref="RazorEngine"/> phase that builds the C# document corresponding to
@@ -14,20 +14,12 @@ namespace Microsoft.AspNetCore.Blazor.Build.Core.RazorCompilation.Engine
     /// </summary>
     internal class BlazorLoweringPhase : IRazorCSharpLoweringPhase
     {
-        private readonly RazorCodeGenerationOptions _codegenOptions;
-
-        public BlazorLoweringPhase(RazorCodeGenerationOptions codegenOptions)
-        {
-            _codegenOptions = codegenOptions
-                ?? throw new ArgumentNullException(nameof(codegenOptions));
-        }
-
         public RazorEngine Engine { get; set; }
 
         public void Execute(RazorCodeDocument codeDocument)
         {
-            var writer = BlazorComponentDocumentWriter.Create(_codegenOptions);
             var documentNode = codeDocument.GetDocumentIntermediateNode();
+            var writer = BlazorComponentDocumentWriter.CreateWriter(((BlazorCodeTarget)documentNode.Target), documentNode.Options);
             var csharpDoc = writer.WriteDocument(codeDocument, documentNode);
             codeDocument.SetCSharpDocument(csharpDoc);
         }
@@ -38,8 +30,8 @@ namespace Microsoft.AspNetCore.Blazor.Build.Core.RazorCompilation.Engine
         /// </summary>
         private class BlazorComponentDocumentWriter : DocumentWriter
         {
-            public static DocumentWriter Create(RazorCodeGenerationOptions options)
-                => Instance.Create(new BlazorCodeTarget(), options);
+            public static DocumentWriter CreateWriter(BlazorCodeTarget codeTarget, RazorCodeGenerationOptions options)
+                => Instance.Create(codeTarget, options);
 
             private static BlazorComponentDocumentWriter Instance
                 = new BlazorComponentDocumentWriter();
