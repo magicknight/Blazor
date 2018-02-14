@@ -29,7 +29,7 @@ install:
   - nvm use 8.9.4
   - npm install -g selenium-standalone
   - selenium-standalone install
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export TEST_CHROME_BINARY="/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome"; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export TEST_CHROME_BINARY="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"; fi
   - export DOTNET_INSTALL_DIR="$PWD/.dotnetcli"
   - curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --channel Current --version latest --install-dir "$DOTNET_INSTALL_DIR"
   - export PATH="$DOTNET_INSTALL_DIR:$PATH"
